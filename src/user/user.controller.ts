@@ -33,13 +33,12 @@ export class UserController {
 
   @Get(':email')
   findOneByEmail(@Param('email') email: string) {
-    console.log(email);
     return this.userService.findOneByEmail(email);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.userService.update(+id, dto);
   }
 
   @Delete(':id')

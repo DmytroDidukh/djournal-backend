@@ -6,6 +6,9 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { UserEntity } from './user/entities/user.entity';
 import { PostModule } from './post/post.module';
+import { PostEntity } from './post/entities/post.entity';
+import { CommentModule } from './comment/comment.module';
+import { CommentEntity } from './comment/entities/comment.entity';
 
 @Module({
   imports: [
@@ -16,11 +19,12 @@ import { PostModule } from './post/post.module';
       username: 'postgres',
       password: '875621',
       database: 'djournal',
-      entities: [UserEntity],
+      entities: [UserEntity, PostEntity, CommentEntity],
       synchronize: true,
     }),
     UserModule,
     PostModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

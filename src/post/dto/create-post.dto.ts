@@ -6,5 +6,6 @@ export class CreatePostDto {
 
   @IsNotEmpty()
   body: string;
-  tags: string[];
+
+  tags?: string[];
 }

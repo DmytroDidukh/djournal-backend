@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -16,8 +17,8 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postService.create(createPostDto);
+  create(@Body() dto: CreatePostDto) {
+    return this.postService.create(dto);
   }
 
   @Get()
@@ -26,13 +27,13 @@ export class PostController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+  findOneById(@Param('id') id: string) {
+    return this.postService.findOneById(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(+id, updatePostDto);
+  update(@Param('id') id: string, @Body() dto: UpdatePostDto) {
+    return this.postService.update(+id, dto);
   }
 
   @Delete(':id')
@@ -40,5 +41,3 @@ export class PostController {
     return this.postService.remove(+id);
   }
 }
-
-//TODO: #7 28:00
