@@ -1,6 +1,7 @@
-import { IsEmail, Length, ValidationArguments } from 'class-validator';
+import { IsEmail, Length } from 'class-validator';
 
-// import { IsUserAlreadyExist } from '../../services/decorator/IsUserAlreadyExist';
+import { USER_ERROR_MESSAGE } from 'src/constants/user';
+import { ValidateUserPassword } from 'src/helpers/decorators/validate-user-password';
 
 export class CreateUserDto {
   @Length(2, 50)
@@ -9,24 +10,11 @@ export class CreateUserDto {
   @IsEmail(
     {},
     {
-      message: 'Email address is invalid.',
+      message: USER_ERROR_MESSAGE.INVALID_EMAIL,
     },
   )
   email: string;
 
-  @Length(8, 20, {
-    message: (args: ValidationArguments) => {
-      const [min, max] = args.constraints;
-      const { value } = args;
-
-      if (!value) return 'Password is required.';
-
-      if (args.value.length < min) {
-        return `Too short, minimum length is ${min} character`;
-      } else {
-        return `Too long, maximum length is ${max} characters`;
-      }
-    },
-  })
+  @ValidateUserPassword()
   password?: string;
 }
