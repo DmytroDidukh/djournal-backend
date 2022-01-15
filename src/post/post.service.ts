@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -42,19 +42,30 @@ export class PostService {
       throw new NotFoundException();
     }
 
-    return result;
+    await this.postRepository.increment({ id }, 'views', 1);
+
+    return {
+      ...result,
+      views: result.views + 1,
+    };
   }
 
   async update(id: number, dto: UpdatePostDto) {
-    // check if exist
-    await this.findOneById(id);
+    const isExist = await this.doesPostExists('id', id);
+
+    if (!isExist) {
+      throw new NotFoundException();
+    }
 
     return this.postRepository.update(id, dto);
   }
 
   async remove(id: number) {
-    // check if exist
-    await this.findOneById(id);
+    const isExist = await this.doesPostExists('id', id);
+
+    if (!isExist) {
+      throw new NotFoundException();
+    }
 
     return this.postRepository.delete(id);
   }
@@ -74,17 +85,8 @@ export class PostService {
       qb.andWhere('p.tags like :tag', { tag: `%${dto.tag}%` });
     }
 
-    if (dto.views) {
-      qb.orderBy('views', dto.views);
-    }
-
-    // qb.setParameters({
-    //   title: `%${dto.title}%`,
-    //   body: `%${dto.body}%`,
-    //   tag: `%${dto.tag}%`,
-    // });
-
     const [items, count] = await qb
+      .orderBy('views', dto.views || 'DESC')
       .limit(dto.limit)
       .take(dto.take)
       .getManyAndCount();
@@ -93,5 +95,13 @@ export class PostService {
       items,
       count,
     };
+  }
+
+  async doesPostExists(key: string, value: string | number) {
+    const post = await this.postRepository.findOne({
+      where: { [key]: value },
+    });
+
+    return !!post;
   }
 }

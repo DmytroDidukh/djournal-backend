@@ -36,9 +36,9 @@ export class CommentService {
   }
 
   async update(id: number, dto: UpdateCommentDto) {
-    const result = await this.findOneById(id);
+    const isExist = await this.doesCommentExists('id', id);
 
-    if (!result) {
+    if (!isExist) {
       throw new NotFoundException();
     }
 
@@ -46,12 +46,20 @@ export class CommentService {
   }
 
   async remove(id: number) {
-    const result = await this.findOneById(id);
+    const isExist = await this.doesCommentExists('id', id);
 
-    if (!result) {
+    if (!isExist) {
       throw new NotFoundException();
     }
 
     return this.commentRepository.delete(id);
+  }
+
+  async doesCommentExists(key: string, value: string | number) {
+    const comment = await this.commentRepository.findOne({
+      where: { [key]: value },
+    });
+
+    return !!comment;
   }
 }
