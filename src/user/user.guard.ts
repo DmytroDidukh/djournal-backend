@@ -28,6 +28,6 @@ export class UserExistGuard implements CanActivate {
       throw new ConflictException(USER_ERROR_MESSAGE.EXIST);
     }
 
-    return !doesUserExist;
+    return true;
   }
 }

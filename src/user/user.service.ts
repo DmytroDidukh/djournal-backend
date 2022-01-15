@@ -13,12 +13,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(dto: CreateUserDto) {
-    // const user = await this.userRepository.findOne({
-    //   where: { email: dto.email },
-    // });
-    // console.log(user);
-
+  create(dto: CreateUserDto) {
     return this.userRepository.save(dto);
   }
 
@@ -30,14 +25,10 @@ export class UserService {
     return this.userRepository.findOne(+id);
   }
 
-  findOneByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email: email } });
-  }
-
   async update(id: number, dto: UpdateUserDto) {
-    const result = await this.findOneById(id);
+    const isExist = await this.doesUserExists('id', id);
 
-    if (!result) {
+    if (!isExist) {
       throw new NotFoundException();
     }
 
@@ -45,9 +36,9 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const result = await this.findOneById(id);
+    const isExist = await this.doesUserExists('id', id);
 
-    if (!result) {
+    if (!isExist) {
       throw new NotFoundException();
     }
 
@@ -59,8 +50,6 @@ export class UserService {
       where: { [key]: value },
     });
 
-    if (user) {
-      throw new NotFoundException();
-    }
+    return !!user;
   }
 }
