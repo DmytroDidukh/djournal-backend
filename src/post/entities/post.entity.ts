@@ -2,11 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-import { CommentEntity } from '../../comment/entities/comment.entity';
 
 @Entity('posts')
 export class PostEntity {
@@ -19,11 +16,11 @@ export class PostEntity {
   @Column()
   body: string;
 
-  @Column('text', { array: true, nullable: true })
-  tags?: string[];
+  @Column({ default: 0 })
+  views: number;
 
-  // @OneToMany(() => CommentEntity, (comment) => comment.post)
-  // comments: CommentEntity[];
+  @Column('simple-json')
+  tags?: string[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

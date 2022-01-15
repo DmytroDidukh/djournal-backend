@@ -6,6 +6,8 @@ import {
   ValidationArguments,
 } from 'class-validator';
 
+import { USER_ERROR_MESSAGE } from 'src/constants/user';
+
 @ValidatorConstraint({ async: false })
 class ValidateUserPasswordConstraint implements ValidatorConstraintInterface {
   validate(password: string | undefined, args: ValidationArguments): boolean {
@@ -15,14 +17,14 @@ class ValidateUserPasswordConstraint implements ValidatorConstraintInterface {
 
     const [min, max] = args.constraints;
 
-    const _passwordLength = String(password).length;
-    return _passwordLength >= min && _passwordLength <= max;
+    const _passLength = String(password).length;
+    return _passLength >= min && _passLength <= max;
   }
 
   defaultMessage(args: ValidationArguments) {
     const [min, max] = args.constraints;
 
-    return `Password should be longer or equal ${min} and shorter or equal ${max} characters.`;
+    return USER_ERROR_MESSAGE.INVALID_PASSWORD(min, max);
   }
 }
 
