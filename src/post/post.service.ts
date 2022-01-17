@@ -97,7 +97,7 @@ export class PostService {
     };
   }
 
-  async doesPostExists(key: string, value: string | number) {
+  async doesPostExists(key: string, value: string | number): Promise<boolean> {
     const post = await this.postRepository.findOne({
       where: { [key]: value },
     });

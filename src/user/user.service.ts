@@ -25,6 +25,10 @@ export class UserService {
     return this.userRepository.findOne(+id);
   }
 
+  findOneByEmail(email: string): Promise<UserEntity | undefined> {
+    return this.userRepository.findOne({ where: { email: email } });
+  }
+
   async update(id: number, dto: UpdateUserDto) {
     const isExist = await this.doesUserExists('id', id);
 
