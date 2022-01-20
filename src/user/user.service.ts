@@ -30,7 +30,7 @@ export class UserService {
   }
 
   async update(id: number, dto: UpdateUserDto) {
-    const isExist = await this.doesUserExists('id', id);
+    const isExist = await this.doesUserExist('id', id);
 
     if (!isExist) {
       throw new NotFoundException();
@@ -40,7 +40,7 @@ export class UserService {
   }
 
   async remove(id: number) {
-    const isExist = await this.doesUserExists('id', id);
+    const isExist = await this.doesUserExist('id', id);
 
     if (!isExist) {
       throw new NotFoundException();
@@ -49,10 +49,8 @@ export class UserService {
     return this.userRepository.delete(id);
   }
 
-  async doesUserExists(key: string, value: string | number) {
-    const user = await this.userRepository.findOne({
-      where: { [key]: value },
-    });
+  async doesUserExist(key: string, value: string | number) {
+    const user = await this.userRepository.findOne({ where: { [key]: value } });
 
     return !!user;
   }
