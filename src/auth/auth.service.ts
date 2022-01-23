@@ -18,6 +18,7 @@ export class AuthService {
     if (user && user.password === password) {
       return this.userService.removeUserPassword(user);
     }
+
     return null;
   }
 

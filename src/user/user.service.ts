@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { SearchUserDto } from './dto/search-user.dto';
 import { UserEntity } from './entities/user.entity';
 
 @Injectable()
@@ -23,12 +24,41 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async findOneById(id: number) {
-    return this.userRepository.findOne(+id);
+  async findOneById(id: number, removePassword = true) {
+    const user = await this.userRepository.findOne(+id);
+
+    if (removePassword) {
+      return this.removeUserPassword(user);
+    }
+
+    return user;
   }
 
   findOneByEmail(email: string): Promise<UserEntity | undefined> {
     return this.userRepository.findOne({ where: { email: email } });
+  }
+
+  async search(dto: SearchUserDto) {
+    const qb = this.userRepository.createQueryBuilder('u');
+
+    if (dto.fullName) {
+      qb.where('u.fullName like :fullName', { fullName: `%${dto.fullName}%` });
+    }
+
+    if (dto.email) {
+      qb.andWhere('u.email like :email', { email: `%${dto.email}%` });
+    }
+
+    const [items, count] = await qb
+      .orderBy('u.createdAt', 'DESC')
+      .limit(dto.limit)
+      .take(dto.take)
+      .getManyAndCount();
+
+    return {
+      items,
+      count,
+    };
   }
 
   async update(id: number, dto: UpdateUserDto) {
@@ -38,7 +68,9 @@ export class UserService {
       throw new NotFoundException();
     }
 
-    return this.userRepository.update(id, dto);
+    await this.userRepository.update(id, dto);
+
+    return this.findOneById(id);
   }
 
   async remove(id: number) {
