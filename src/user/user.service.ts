@@ -13,15 +13,17 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  create(dto: CreateUserDto) {
-    return this.userRepository.save(dto);
+  async create(dto: CreateUserDto) {
+    const user = await this.userRepository.save(dto);
+
+    return this.removeUserPassword(user);
   }
 
   findAll() {
     return this.userRepository.find();
   }
 
-  findOneById(id: number) {
+  async findOneById(id: number) {
     return this.userRepository.findOne(+id);
   }
 
@@ -53,5 +55,11 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { [key]: value } });
 
     return !!user;
+  }
+
+  removeUserPassword(userData: UserEntity) {
+    const { password, ...user } = userData;
+
+    return user;
   }
 }

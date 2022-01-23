@@ -1,9 +1,18 @@
-import { Controller, Request, Post, Get, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  Get,
+  UseGuards,
+  Body,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { CreateUserDto } from './user/dto/create-user.dto';
+import { UserExistGuard } from './user/user.guard';
 
 @Controller()
 export class AppController {
@@ -22,5 +31,11 @@ export class AppController {
   @Get('auth/sign')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @UseGuards(UserExistGuard)
+  @Post('auth/register')
+  register(@Body() userDto: CreateUserDto) {
+    return this.authService.register(userDto);
   }
 }

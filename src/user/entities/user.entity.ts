@@ -22,9 +22,6 @@ export class UserEntity {
   @Column({ nullable: true })
   password?: string;
 
-  // @OneToMany(() => CommentEntity, (comment) => comment.user)
-  // comments: CommentEntity[];
-
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 }
