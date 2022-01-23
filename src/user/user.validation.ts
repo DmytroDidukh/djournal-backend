@@ -17,8 +17,8 @@ class ValidateUserPasswordConstraint implements ValidatorConstraintInterface {
 
     const [min, max] = args.constraints;
 
-    const _passLength = String(password).length;
-    return _passLength >= min && _passLength <= max;
+    const regExp = new RegExp(`[a-zA-Z0-9]{${min},${max}}`);
+    return regExp.test(password);
   }
 
   defaultMessage(args: ValidationArguments) {

@@ -5,5 +5,6 @@ export const USER_ERROR_MESSAGE: UserErrorMessageType = {
   INVALID_EMAIL: 'Email address is invalid.',
   INVALID_EMAIL_OR_PASSWORD: 'Wrong email or password.',
   INVALID_PASSWORD: (min, max) =>
-    `Password should be longer or equal ${min} and shorter or equal ${max} characters.`,
+    /* eslint-disable-next-line */
+    `Password should contain only Latin letters and numbers. Be longer or equal ${min} and shorter or equal ${max} characters.`,
 };
