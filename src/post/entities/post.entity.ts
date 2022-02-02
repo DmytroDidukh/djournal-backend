@@ -15,8 +15,11 @@ export class PostEntity {
   @Column()
   title: string;
 
+  @Column()
+  description: string;
+
   @Column('simple-json')
-  body: PostBodyBlock[];
+  body?: PostBodyBlock[];
 
   @Column({ default: 0 })
   views: number;

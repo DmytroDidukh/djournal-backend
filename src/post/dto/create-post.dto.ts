@@ -13,8 +13,11 @@ export class CreatePostDto {
   @IsString()
   title: string;
 
+  @IsString()
+  description: string;
+
   @IsArray()
-  body: PostBodyBlock[];
+  body?: PostBodyBlock[];
 
   @IsOptional()
   @IsArray()
