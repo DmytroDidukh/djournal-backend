@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { PostBodyBlock } from '../dto/create-post.dto';
+
 @Entity('posts')
 export class PostEntity {
   @PrimaryGeneratedColumn()
@@ -13,13 +15,13 @@ export class PostEntity {
   @Column()
   title: string;
 
-  @Column()
-  body: string;
+  @Column('simple-json')
+  body: PostBodyBlock[];
 
   @Column({ default: 0 })
   views: number;
 
-  @Column('simple-json')
+  @Column('simple-json', { default: [] })
   tags?: string[];
 
   @CreateDateColumn({ type: 'timestamp' })

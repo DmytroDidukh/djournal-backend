@@ -1,11 +1,22 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export interface PostBodyBlock {
+  id: string;
+  type: string;
+  data: {
+    text: string;
+  };
+}
 
 export class CreatePostDto {
   @IsNotEmpty()
+  @IsString()
   title: string;
 
-  @IsNotEmpty()
-  body: string;
+  @IsArray()
+  body: PostBodyBlock[];
 
+  @IsOptional()
+  @IsArray()
   tags?: string[];
 }
