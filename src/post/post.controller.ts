@@ -25,7 +25,7 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@User() user: UserEntity, @Body() dto: CreatePostDto) {
-    return this.postService.create(dto);
+    return this.postService.create(dto, user);
   }
 
   @Get()
@@ -50,13 +50,17 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdatePostDto) {
-    return this.postService.update(+id, dto);
+  update(
+    @User() user: UserEntity,
+    @Param('id') id: string,
+    @Body() dto: UpdatePostDto,
+  ) {
+    return this.postService.update(+id, dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  remove(@User() user: UserEntity, @Param('id') id: string) {
+    return this.postService.remove(+id, user);
   }
 }

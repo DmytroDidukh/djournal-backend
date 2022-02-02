@@ -17,7 +17,7 @@ export class CommentService {
     return this.commentRepository.save({
       text: dto.text,
       post: { id: dto.postId },
-      user: { id: 2 },
+      author: { id: 2 },
     });
   }
 

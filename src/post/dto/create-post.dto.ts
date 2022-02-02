@@ -16,6 +16,7 @@ export class CreatePostDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsArray()
   body?: PostBodyBlock[];
 

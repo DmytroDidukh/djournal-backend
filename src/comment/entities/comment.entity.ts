@@ -19,11 +19,9 @@ export class CommentEntity {
   text: string;
 
   @ManyToOne(() => UserEntity, { nullable: false })
-  @JoinColumn({ name: 'userId' })
-  user: UserEntity;
+  author: UserEntity;
 
   @ManyToOne(() => PostEntity, { nullable: false })
-  @JoinColumn({ name: 'postId' })
   post: PostEntity;
 
   @CreateDateColumn({ type: 'timestamp' })

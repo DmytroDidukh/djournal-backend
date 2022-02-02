@@ -1,6 +1,9 @@
+import { PostBodyBlock } from './create-post.dto';
+
 export class SearchPostDto {
   title?: string;
-  body?: string;
+  description?: string;
+  body?: PostBodyBlock[];
   views?: 'DESC' | 'ASC';
   tag?: string;
   limit? = 0;

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -6,6 +10,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { SearchPostDto } from './dto/search-post.dto';
 import { PostEntity } from './entities/post.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class PostService {
@@ -14,8 +19,11 @@ export class PostService {
     private postRepository: Repository<PostEntity>,
   ) {}
 
-  create(dto: CreatePostDto) {
-    return this.postRepository.save(dto);
+  create(dto: CreatePostDto, user: UserEntity) {
+    return this.postRepository.save({
+      ...dto,
+      author: { id: user.id },
+    });
   }
 
   findAll() {
@@ -36,45 +44,57 @@ export class PostService {
   }
 
   async findOneById(id: number) {
-    const result = await this.postRepository.findOne(+id);
+    const post = await this.postRepository.findOne(+id);
 
-    if (!result) {
+    if (!post) {
       throw new NotFoundException();
     }
 
     await this.postRepository.increment({ id }, 'views', 1);
 
     return {
-      ...result,
-      views: result.views + 1,
+      ...post,
+      views: post.views + 1,
     };
   }
 
-  async update(id: number, dto: UpdatePostDto) {
-    const isExist = await this.doesPostExists('id', id);
+  async update(id: number, dto: UpdatePostDto, user: UserEntity) {
+    const post = await this.postRepository.findOne(+id);
 
-    if (!isExist) {
+    if (!post) {
       throw new NotFoundException();
+    } else if (post.author.id !== user.id) {
+      throw new ForbiddenException();
     }
 
     return this.postRepository.update(id, dto);
   }
 
-  async remove(id: number) {
-    const isExist = await this.doesPostExists('id', id);
+  async remove(id: number, user: UserEntity) {
+    const post = await this.postRepository.findOne(+id);
 
-    if (!isExist) {
+    if (!post) {
       throw new NotFoundException();
+    } else if (post.author.id !== user.id) {
+      throw new ForbiddenException();
     }
 
     return this.postRepository.delete(id);
   }
 
   async search(dto: SearchPostDto) {
-    const qb = this.postRepository.createQueryBuilder('p');
+    const qb = this.postRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.author', 'author');
 
     if (dto.title) {
       qb.where('p.title like :title', { title: `%${dto.title}%` });
+    }
+
+    if (dto.description) {
+      qb.andWhere('p.description like :description', {
+        description: `%${dto.description}%`,
+      });
     }
 
     if (dto.body) {
@@ -95,13 +115,5 @@ export class PostService {
       items,
       count,
     };
-  }
-
-  async doesPostExists(key: string, value: string | number): Promise<boolean> {
-    const post = await this.postRepository.findOne({
-      where: { [key]: value },
-    });
-
-    return !!post;
   }
 }
