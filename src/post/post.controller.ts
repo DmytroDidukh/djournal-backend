@@ -43,9 +43,14 @@ export class PostController {
     return this.postService.search(dto);
   }
 
+  @Get('/slug/:slug')
+  findOneByIdAndSlug(@Param('slug') slug: string) {
+    return this.postService.findOneBySlug(slug);
+  }
+
   @Get(':id')
-  findOneById(@Param('id') id: string, @Query('editing') editing: boolean) {
-    return this.postService.findOneById(+id, editing);
+  findOneById(@Param('id') id: string) {
+    return this.postService.findOneById(+id);
   }
 
   @UseGuards(JwtAuthGuard)

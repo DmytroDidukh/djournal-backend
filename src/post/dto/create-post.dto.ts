@@ -13,6 +13,8 @@ export class CreatePostDto {
   @IsString()
   title: string;
 
+  slug?: string;
+
   @IsString()
   description: string;
 

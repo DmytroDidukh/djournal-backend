@@ -11,17 +11,21 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { SearchPostDto } from './dto/search-post.dto';
 import { PostEntity } from './entities/post.entity';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { slugifyConfig, SlugProvider } from './slug.provider';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(PostEntity)
     private postRepository: Repository<PostEntity>,
+    private readonly slugProvider: SlugProvider,
   ) {}
 
-  create(dto: CreatePostDto, user: UserEntity) {
+  async create(dto: CreatePostDto, user: UserEntity) {
+    const post = await this.uniqueSlug(dto);
+
     return this.postRepository.save({
-      ...dto,
+      ...post,
       author: { id: user.id },
     });
   }
@@ -43,23 +47,31 @@ export class PostService {
     };
   }
 
-  async findOneById(id: number, editing: boolean) {
+  async findOneBySlug(slug: string) {
+    const post = await this.postRepository.findOne({
+      where: { slug: slug },
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    await this.postRepository.increment({ id: post.id }, 'views', 1);
+
+    return {
+      ...post,
+      views: post.views + 1,
+    };
+  }
+
+  async findOneById(id: number) {
     const post = await this.postRepository.findOne(+id);
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    if (editing) {
-      return post;
-    }
-
-    await this.postRepository.increment({ id }, 'views', 1);
-
-    return {
-      ...post,
-      views: post.views + 1,
-    };
+    return post;
   }
 
   async update(id: number, dto: UpdatePostDto, user: UserEntity) {
@@ -119,5 +131,30 @@ export class PostService {
       items,
       count,
     };
+  }
+
+  async uniqueSlug(dto: CreatePostDto): Promise<CreatePostDto> {
+    const post = {
+      ...dto,
+      slug: this.slugProvider.slugify(dto.title),
+    };
+
+    const exists = await this.findSlugs(post.slug);
+
+    // if slug doesn't already exists
+    if (!exists || exists.length === 0) {
+      return post;
+    }
+
+    post.slug = `${post.slug}${slugifyConfig.replacement}${exists.length}`;
+
+    return post;
+  }
+
+  private async findSlugs(slug: string): Promise<PostEntity[]> {
+    return await this.postRepository
+      .createQueryBuilder('p')
+      .where('p.slug like :slug', { slug: `${slug}%` })
+      .getMany();
   }
 }

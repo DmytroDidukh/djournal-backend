@@ -2,7 +2,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -17,6 +16,11 @@ export class PostEntity {
 
   @Column()
   title: string;
+
+  @Column({
+    unique: true,
+  })
+  slug: string;
 
   @Column()
   description: string;
