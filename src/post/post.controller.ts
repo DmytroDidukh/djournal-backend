@@ -44,8 +44,8 @@ export class PostController {
   }
 
   @Get(':id')
-  findOneById(@Param('id') id: string) {
-    return this.postService.findOneById(+id);
+  findOneById(@Param('id') id: string, @Query('editing') editing: boolean) {
+    return this.postService.findOneById(+id, editing);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -43,11 +43,15 @@ export class PostService {
     };
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: number, editing: boolean) {
     const post = await this.postRepository.findOne(+id);
 
     if (!post) {
       throw new NotFoundException();
+    }
+
+    if (editing) {
+      return post;
     }
 
     await this.postRepository.increment({ id }, 'views', 1);
