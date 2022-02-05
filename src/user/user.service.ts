@@ -14,24 +14,16 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async create(dto: CreateUserDto) {
-    const user = await this.userRepository.save(dto);
-
-    return this.removeUserPassword(user);
+  create(dto: CreateUserDto) {
+    return this.userRepository.save(dto);
   }
 
   findAll() {
     return this.userRepository.find();
   }
 
-  async findOneById(id: number, removePassword = true) {
-    const user = await this.userRepository.findOne(+id);
-
-    if (removePassword) {
-      return this.removeUserPassword(user);
-    }
-
-    return user;
+  findOneById(id: number) {
+    return this.userRepository.findOne(+id);
   }
 
   findOneByEmail(email: string): Promise<UserEntity | undefined> {
@@ -87,11 +79,5 @@ export class UserService {
     const user = await this.userRepository.findOne({ where: { [key]: value } });
 
     return !!user;
-  }
-
-  removeUserPassword(userData: UserEntity) {
-    const { password, ...user } = userData;
-
-    return user;
   }
 }

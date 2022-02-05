@@ -16,7 +16,7 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
 
     if (user && user.password === password) {
-      return this.userService.removeUserPassword(user);
+      return user;
     }
 
     return null;
