@@ -4,11 +4,10 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
-  JoinColumn,
 } from 'typeorm';
 
-import { UserEntity } from '../../user/entities/user.entity';
-import { PostEntity } from '../../post/entities/post.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { PostEntity } from 'src/post/entities/post.entity';
 
 @Entity('comments')
 export class CommentEntity {
@@ -18,7 +17,7 @@ export class CommentEntity {
   @Column()
   text: string;
 
-  @ManyToOne(() => UserEntity, { nullable: false })
+  @ManyToOne(() => UserEntity, { nullable: false, eager: true })
   author: UserEntity;
 
   @ManyToOne(() => PostEntity, { nullable: false })

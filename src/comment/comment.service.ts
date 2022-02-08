@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { CommentEntity } from './entities/comment.entity';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class CommentService {
@@ -13,16 +14,20 @@ export class CommentService {
     private commentRepository: Repository<CommentEntity>,
   ) {}
 
-  create(dto: CreateCommentDto) {
+  create(dto: CreateCommentDto, user: UserEntity) {
     return this.commentRepository.save({
       text: dto.text,
       post: { id: dto.postId },
-      author: { id: 2 },
+      author: { id: user.id },
     });
   }
 
   findAll() {
     return this.commentRepository.find();
+  }
+
+  findAllByPostId(postId: number) {
+    return this.commentRepository.find({ where: { post: { id: postId } } });
   }
 
   async findOneById(id: number) {

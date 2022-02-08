@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from 'src/user/user.decorator';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Controller('comment')
 export class CommentController {
@@ -20,13 +23,17 @@ export class CommentController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() dto: CreateCommentDto) {
-    return this.commentService.create(dto);
+  create(@User() user: UserEntity, @Body() dto: CreateCommentDto) {
+    return this.commentService.create(dto, user);
   }
 
   @Get()
-  findAll() {
-    return this.commentService.findAll();
+  findAll(@Query('postId') postId: number) {
+    if (!postId) {
+      return this.commentService.findAll();
+    } else {
+      return this.commentService.findAllByPostId(+postId);
+    }
   }
 
   @Get(':id')
