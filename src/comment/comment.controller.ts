@@ -28,7 +28,7 @@ export class CommentController {
   }
 
   @Get()
-  findAll(@Query('postId') postId: number) {
+  findAll(@Query('postId') postId?: number) {
     if (!postId) {
       return this.commentService.findAll();
     } else {
